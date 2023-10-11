@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  rest_api:
+   image: twitter_clone.rest_api
+   restart: always
+   container_name: twitter_clone.rest_api
+   environment:
+    - ASPNETCORE_ENVIRONMENT=Development
+   networks:
+    - mongo-claster
+   ports:
+    - 5000:80
+   volumes:
+    - image-volme:/app/files 
+  graphql:
+   image: twitter_clone.graphql
+   restart: always
+   container_name: twitter_clone.graphql
+   environment:
+    - ASPNETCORE_ENVIRONMENT=Development
+   networks:
+    - mongo-claster
+   ports:
+    - 5001:80  
+   volumes:
+    - image-volme:/app/files
+
+networks:
+  mongo-claster:
+    name: mongo-claster
+volumes:
+  image-volme:
+    name: image-volme    
+

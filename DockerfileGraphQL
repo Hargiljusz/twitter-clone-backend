@@ -1,0 +1,22 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /source
+
+# copy csproj and restore as distinct layers
+COPY *.sln .
+COPY DataCommon/*.csproj ./DataCommon/
+COPY DataService/*.csproj ./DataService/
+COPY GraphQL/*.csproj ./GraphQL/
+#RUN dotnet restore ./RestAPI/RestAPI.csproj
+
+# copy everything else and build app
+COPY DataCommon/. ./DataCommon/
+COPY DataService/. ./DataService/
+COPY GraphQL/. ./GraphQL/
+WORKDIR /source/GraphQL
+RUN dotnet publish GraphQL.csproj -c release -o /app 
+
+# final stage/image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+WORKDIR /app
+COPY --from=build /app ./
+ENTRYPOINT ["dotnet", "GraphQL.dll"]
